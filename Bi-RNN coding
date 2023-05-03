@@ -1,0 +1,40 @@
+import tensorflow as tf
+
+model = Sequential([
+    layers.Embedding(5000, 100, input_length=100),
+    layers.Bidirectional(layers.SimpleRNN(64, return_sequences=True, recurrent_dropout=0.4)),
+    layers.GlobalAveragePooling1D(),    # or layers.Flatten()
+    layers.Dense(64, activation='relu'),
+    layers.Dropout(0.4),
+    layers.Dense(num_classes, activation='softmax')
+])
+
+model.compile(loss=tf.keras.losses.SparseCategoricalCrossentropy(),
+              optimizer=tf.keras.optimizers.Adam(learning_rate=0.001),
+              metrics=['accuracy'])
+              
+model.summary()
+
+
+trained = model.fit(X_train, y_train,
+                    epochs=20, 
+                    validation_data=(X_val, y_val),
+                    shuffle=True)
+ #accuracy curve
+plt.plot(trained.history['accuracy'])
+plt.plot(trained.history['val_accuracy'])
+plt.title('Accuracy Curves')
+plt.ylabel('Accuracy')
+plt.xlabel('Epoch')
+plt.legend(['Train', 'Test'], loc='upper left')
+plt.show()
+
+#loss curve
+
+plt.plot(trained.history['loss'])
+plt.plot(trained.history['val_loss'])
+plt.title('Loss Curves')
+plt.ylabel('Loss')
+plt.xlabel('Epoch')
+plt.legend(['Train', 'Test'], loc='upper left')
+plt.show()
